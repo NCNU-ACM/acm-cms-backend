@@ -1,0 +1,93 @@
+from pydantic import BaseModel
+from typing import Optional, List
+from datetime import date
+
+
+class GroupBase(BaseModel):
+    name: str
+    slug: str
+    order: int
+    tagline: str
+    description: str
+    color: str
+
+
+class GroupCreate(GroupBase):
+    pass
+
+
+class GroupResponse(GroupBase):
+    pass
+
+
+class ContactItem(BaseModel):
+    label: str
+    url: str
+
+
+class LinkItem(BaseModel):
+    label: str
+    url: str
+
+
+class EventBase(BaseModel):
+    title: str
+    date: date
+    group: str
+    type: str
+    location: Optional[str] = None
+    description: str
+    registration: Optional[str] = None
+
+
+class EventCreate(EventBase):
+    semester: str
+
+
+class EventResponse(EventBase):
+    id: str
+    semester: str
+
+
+class MemberBase(BaseModel):
+    name: str
+    group: Optional[str] = None
+    role: str
+    bio: Optional[str] = None
+    avatar: Optional[str] = None
+    contact: Optional[List[ContactItem]] = []
+
+
+class MemberCreate(MemberBase):
+    semester: str
+
+
+class MemberResponse(MemberBase):
+    id: str
+    semester: str
+
+
+class ShowcaseBase(BaseModel):
+    title: str
+    group: str
+    date: date
+    description: str
+    tags: Optional[List[str]] = []
+    links: Optional[List[LinkItem]] = []
+
+
+class ShowcaseCreate(ShowcaseBase):
+    pass
+
+
+class ShowcaseResponse(ShowcaseBase):
+    id: str
+
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+
+class LoginResponse(BaseModel):
+    token: str
