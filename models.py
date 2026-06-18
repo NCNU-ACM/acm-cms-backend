@@ -72,6 +72,9 @@ class ShowcaseBase(BaseModel):
     group: str
     date: date
     description: str
+    related_event: Optional[str] = None
+    cover_image: Optional[str] = None
+    gallery: Optional[List[str]] = []
     tags: Optional[List[str]] = []
     links: Optional[List[LinkItem]] = []
 
