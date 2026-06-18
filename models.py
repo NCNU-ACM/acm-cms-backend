@@ -37,16 +37,17 @@ class EventBase(BaseModel):
     type: str
     location: Optional[str] = None
     description: str
+    content: Optional[str] = None
+    links: Optional[List[LinkItem]] = []
     registration: Optional[str] = None
 
 
 class EventCreate(EventBase):
-    semester: str
+    pass
 
 
 class EventResponse(EventBase):
     id: str
-    semester: str
 
 
 class MemberBase(BaseModel):

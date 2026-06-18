@@ -8,8 +8,7 @@ CONTENT_ROOT = os.path.join(os.path.dirname(__file__), "..", "..", "acm-website"
 
 
 def get_collection_path(collection: str, semester: Optional[str] = None) -> str:
-    """取得某個 collection 的資料夾路徑，events/members 需要學期參數"""
-    if semester:
+    if collection == "members" and semester:
         return os.path.join(CONTENT_ROOT, collection, semester)
     return os.path.join(CONTENT_ROOT, collection)
 
