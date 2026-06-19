@@ -1,4 +1,5 @@
 import frontmatter
+import yaml
 import os
 from datetime import datetime
 from typing import Optional
@@ -19,7 +20,6 @@ def generate_timestamp_id() -> str:
 
 
 def list_entries(collection: str, semester: Optional[str] = None) -> list:
-    """讀取某個 collection 底下所有 .md 檔案"""
     folder = get_collection_path(collection, semester)
     if not os.path.exists(folder):
         return []
@@ -31,12 +31,17 @@ def list_entries(collection: str, semester: Optional[str] = None) -> list:
         filepath = os.path.join(folder, filename)
         try:
             with open(filepath, 'r', encoding='utf-8') as f:
-                post = frontmatter.load(f)
-            entry = dict(post.metadata)
-            entry['id'] = filename[:-3]
-            if semester:
-                entry['semester'] = semester
-            results.append(entry)
+                text = f.read()
+            if text.startswith('---'):
+                parts = text.split('---', 2)
+                if len(parts) >= 3:
+                    metadata = yaml.safe_load(parts[1])
+                    if metadata:
+                        entry = dict(metadata)
+                        entry['id'] = filename[:-3]
+                        if semester:
+                            entry['semester'] = semester
+                        results.append(entry)
         except Exception as e:
             print(f"Error loading {filepath}: {e}")
             continue
@@ -45,29 +50,40 @@ def list_entries(collection: str, semester: Optional[str] = None) -> list:
 
 
 def read_entry(collection: str, entry_id: str, semester: Optional[str] = None) -> Optional[dict]:
-    """讀取單筆資料"""
     folder = get_collection_path(collection, semester)
     filepath = os.path.join(folder, f"{entry_id}.md")
     if not os.path.exists(filepath):
         return None
 
-    post = frontmatter.load(filepath)
-    data = dict(post.metadata)
-    data["id"] = entry_id
-    if semester:
-        data["semester"] = semester
-    return data
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            text = f.read()
+        if text.startswith('---'):
+            parts = text.split('---', 2)
+            if len(parts) >= 3:
+                metadata = yaml.safe_load(parts[1])
+                if metadata:
+                    entry = dict(metadata)
+                    entry['id'] = entry_id
+                    if semester:
+                        entry['semester'] = semester
+                    return entry
+        return None
+    except Exception as e:
+        print(f"Error loading {filepath}: {e}")
+        return None
 
 
 def write_entry(collection: str, entry_id: str, data: dict, semester: Optional[str] = None, body: str = "") -> str:
-    """寫入或更新一筆資料，回傳檔案路徑"""
     folder = get_collection_path(collection, semester)
     os.makedirs(folder, exist_ok=True)
     filepath = os.path.join(folder, f"{entry_id}.md")
 
     clean_data = {k: v for k, v in data.items() if v is not None}
 
-    post = frontmatter.Post(content=body, **clean_data)
+    body_content = clean_data.pop('content', body)
+
+    post = frontmatter.Post(content=body_content, **clean_data)
     output = frontmatter.dumps(post)
 
     with open(filepath, "w", encoding="utf-8") as f:
