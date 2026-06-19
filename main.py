@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from models import LoginRequest, LoginResponse
 from auth import login
-from routers import groups, events, members, showcase
+from routers import groups, events, members, showcase, announcements
 
 app = FastAPI(title="NCNU ACM CMS API")
 
@@ -19,6 +19,7 @@ app.include_router(groups.router)
 app.include_router(events.router)
 app.include_router(members.router)
 app.include_router(showcase.router)
+app.include_router(announcements.router)
 
 
 @app.post("/auth/login", response_model=LoginResponse)

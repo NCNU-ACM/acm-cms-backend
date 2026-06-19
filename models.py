@@ -95,3 +95,16 @@ class LoginRequest(BaseModel):
 
 class LoginResponse(BaseModel):
     token: str
+
+class AnnouncementCreate(BaseModel):
+    title: str
+    date: str
+    content: str
+    active: bool = False
+
+class AnnouncementResponse(BaseModel):
+    id: str
+    title: str
+    date: str
+    content: str
+    active: bool = False
