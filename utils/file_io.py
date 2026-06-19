@@ -18,23 +18,30 @@ def generate_timestamp_id() -> str:
     return datetime.now().strftime("%Y%m%d%H%M%S")
 
 
-def list_entries(collection: str, semester: Optional[str] = None) -> list[dict]:
+def list_entries(collection: str, semester: Optional[str] = None) -> list:
     """讀取某個 collection 底下所有 .md 檔案"""
     folder = get_collection_path(collection, semester)
     if not os.path.exists(folder):
         return []
 
-    entries = []
+    results = []
     for filename in os.listdir(folder):
-        if filename.endswith(".md"):
-            filepath = os.path.join(folder, filename)
-            post = frontmatter.load(filepath)
-            data = dict(post.metadata)
-            data["id"] = filename.replace(".md", "")
+        if not filename.endswith('.md'):
+            continue
+        filepath = os.path.join(folder, filename)
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                post = frontmatter.load(f)
+            entry = dict(post.metadata)
+            entry['id'] = filename[:-3]
             if semester:
-                data["semester"] = semester
-            entries.append(data)
-    return entries
+                entry['semester'] = semester
+            results.append(entry)
+        except Exception as e:
+            print(f"Error loading {filepath}: {e}")
+            continue
+
+    return results
 
 
 def read_entry(collection: str, entry_id: str, semester: Optional[str] = None) -> Optional[dict]:

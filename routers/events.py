@@ -5,16 +5,16 @@ from utils.git_backup import commit_change
 from utils.build_trigger import trigger_rebuild
 from auth import verify_token
 
-router = APIRouter()
+router = APIRouter(prefix="/events", tags=["events"])
 
 
-@router.get("/", response_model=list[EventResponse])
+@router.get("", response_model=list[EventResponse])
 def list_events():
     entries = file_io.list_entries("events")
     return entries
 
 
-@router.post("/", response_model=EventResponse, dependencies=[Depends(verify_token)])
+@router.post("", response_model=EventResponse, dependencies=[Depends(verify_token)])
 def create_event(event: EventCreate):
     entry_id = file_io.generate_timestamp_id()
     data = event.model_dump()
