@@ -106,5 +106,5 @@ class AnnouncementResponse(BaseModel):
     id: str
     title: str
     date: str
-    content: str
+    content: str = ''
     active: bool = False

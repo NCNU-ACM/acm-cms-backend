@@ -74,16 +74,16 @@ def read_entry(collection: str, entry_id: str, semester: Optional[str] = None) -
         return None
 
 
-def write_entry(collection: str, entry_id: str, data: dict, semester: Optional[str] = None, body: str = "") -> str:
+def write_entry(collection: str, entry_id: str, data: dict, semester: Optional[str] = None) -> str:
     folder = get_collection_path(collection, semester)
     os.makedirs(folder, exist_ok=True)
     filepath = os.path.join(folder, f"{entry_id}.md")
 
     clean_data = {k: v for k, v in data.items() if v is not None}
 
-    body_content = clean_data.pop('content', body)
+    post = frontmatter.Post("")
+    post.metadata = clean_data
 
-    post = frontmatter.Post(content=body_content, **clean_data)
     output = frontmatter.dumps(post)
 
     with open(filepath, "w", encoding="utf-8") as f:
