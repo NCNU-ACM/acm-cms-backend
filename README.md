@@ -106,32 +106,6 @@ group: system
 
 `utils/git_backup.py` 的 `commit_change()` 會在每次資料異動後，把 `acm-website/content/` 整個同步複製到 `acm-backup` 並執行 commit + push，作為內容資料的獨立版本記錄與備份。
 
-## 部署
-
-1. 伺服器需安裝 Python 3.10 以上
-2. clone 本專案到 `acm-website` 同一層目錄
-3. 安裝套件：
-```bash
-   pip install -r requirements.txt
-```
-4. 設定環境變數（帳密）
-5. 使用 systemd 讓 uvicorn 常駐運行（建議，而非用 `tmux` 暫掛）：
-```ini
-   [Unit]
-   Description=ACM CMS Backend
-   After=network.target
-
-   [Service]
-   WorkingDirectory=/path/to/acm-cms-backend
-   ExecStart=/path/to/acm-cms-backend/venv/bin/uvicorn main:app --host 127.0.0.1 --port 8000
-   Restart=always
-   RestartSec=5
-
-   [Install]
-   WantedBy=multi-user.target
-```
-6. 使用 Nginx 反向代理到 `127.0.0.1:8000`
-
 ## 技術棧
 
 - [FastAPI](https://fastapi.tiangolo.com/)
