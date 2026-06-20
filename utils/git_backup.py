@@ -33,6 +33,7 @@ def commit_change(message: str) -> bool:
             cwd=BACKUP_REPO_PATH,
             capture_output=True,
             text=True,
+            encoding="utf-8",
         )
         if result.returncode != 0 and "nothing to commit" not in result.stdout:
             print(f"Git commit 警告: {result.stdout} {result.stderr}")
