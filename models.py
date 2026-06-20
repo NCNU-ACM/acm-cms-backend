@@ -32,7 +32,7 @@ class LinkItem(BaseModel):
 
 class EventBase(BaseModel):
     title: str
-    date: date
+    event_date: str
     group: str
     type: str
     location: Optional[str] = None
@@ -41,13 +41,12 @@ class EventBase(BaseModel):
     links: Optional[List[LinkItem]] = []
     registration: Optional[str] = None
 
-
 class EventCreate(EventBase):
     pass
 
-
 class EventResponse(EventBase):
     id: str
+    created_at: str
 
 
 class MemberBase(BaseModel):
@@ -88,6 +87,19 @@ class ShowcaseResponse(ShowcaseBase):
     id: str
 
 
+class AnnouncementBase(BaseModel):
+    title: str
+    content: str
+    active: bool = False
+
+class AnnouncementCreate(AnnouncementBase):
+    pass
+
+class AnnouncementResponse(AnnouncementBase):
+    id: str
+    created_at: str
+
+
 class LoginRequest(BaseModel):
     username: str
     password: str
@@ -95,16 +107,3 @@ class LoginRequest(BaseModel):
 
 class LoginResponse(BaseModel):
     token: str
-
-class AnnouncementCreate(BaseModel):
-    title: str
-    date: str
-    content: str
-    active: bool = False
-
-class AnnouncementResponse(BaseModel):
-    id: str
-    title: str
-    date: str
-    content: str = ''
-    active: bool = False

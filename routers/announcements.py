@@ -16,9 +16,12 @@ def list_announcements():
 def create_announcement(item: AnnouncementCreate):
     entry_id = file_io.generate_timestamp_id()
     data = item.model_dump()
+    data["created_at"] = entry_id
+
     file_io.write_entry("announcements", entry_id, data)
     commit_change(f"新增公告: {item.title}")
     trigger_rebuild()
+
     data["id"] = entry_id
     return data
 
@@ -27,10 +30,13 @@ def update_announcement(entry_id: str, item: AnnouncementCreate):
     existing = file_io.read_entry("announcements", entry_id)
     if not existing:
         raise HTTPException(status_code=404, detail="找不到這則公告")
+    
     data = item.model_dump()
+    data["created_at"] = existing.get("created_at", entry_id)
     file_io.write_entry("announcements", entry_id, data)
     commit_change(f"更新公告: {item.title}")
     trigger_rebuild()
+
     data["id"] = entry_id
     return data
 

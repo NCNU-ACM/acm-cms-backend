@@ -18,6 +18,7 @@ def list_events():
 def create_event(event: EventCreate):
     entry_id = file_io.generate_timestamp_id()
     data = event.model_dump()
+    data["created_at"] = entry_id
 
     file_io.write_entry("events", entry_id, data)
     commit_change(f"新增活動: {event.title}")
@@ -34,6 +35,7 @@ def update_event(entry_id: str, event: EventCreate):
         raise HTTPException(status_code=404, detail="找不到這個活動")
 
     data = event.model_dump()
+    data["created_at"] = existing.get("created_at", entry_id)
     file_io.write_entry("events", entry_id, data)
     commit_change(f"更新活動: {event.title}")
     trigger_rebuild()

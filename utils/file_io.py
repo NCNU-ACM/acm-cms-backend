@@ -15,7 +15,6 @@ def get_collection_path(collection: str, semester: Optional[str] = None) -> str:
 
 
 def generate_timestamp_id() -> str:
-    """產生時間戳當作檔名，格式: 20240615143022"""
     return datetime.now().strftime("%Y%m%d%H%M%S")
 
 
@@ -93,7 +92,6 @@ def write_entry(collection: str, entry_id: str, data: dict, semester: Optional[s
 
 
 def delete_entry(collection: str, entry_id: str, semester: Optional[str] = None) -> bool:
-    """刪除一筆資料，如果資料夾因此變空則一併移除"""
     folder = get_collection_path(collection, semester)
     filepath = os.path.join(folder, f"{entry_id}.md")
     if not os.path.exists(filepath):
@@ -108,7 +106,6 @@ def delete_entry(collection: str, entry_id: str, semester: Optional[str] = None)
 
 
 def list_semesters(collection: str) -> list[str]:
-    """列出某個 collection 目前有哪些學期資料夾"""
     folder = get_collection_path(collection)
     if not os.path.exists(folder):
         return []
