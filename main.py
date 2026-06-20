@@ -1,8 +1,8 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 from models import LoginRequest, LoginResponse
-from auth import login
+from auth import login, verify_token
 from routers import groups, events, members, showcase, announcements
 
 app = FastAPI(title="NCNU ACM CMS API")
@@ -31,3 +31,7 @@ def auth_login(req: LoginRequest):
 @app.get("/")
 def root():
     return {"status": "ok", "message": "NCNU ACM CMS API"}
+
+@app.get("/auth/verify", dependencies=[Depends(verify_token)])
+def auth_verify():
+    return {"valid": True}
