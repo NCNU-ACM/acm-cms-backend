@@ -10,7 +10,7 @@ ACM 官網內容管理系統（CMS）的後端 API，使用 FastAPI 建置，負
 |---|---|
 | [INSTALL.md](INSTALL.md) | 伺服器安裝與部署步驟、日常維運、常見問題 |
 | 本文件 | API 端點、認證機制、資料儲存與備份邏輯 |
-| [VUE_GUIDE.md](https://github.com/NCNU-ACM/acm-website/blob/master/VUE_GUIDE.md) | 前端 Vue 3 教學與元件導覽 |
+| [React 維護指南（HackMD）](https://hackmd.io/@HcF5PSZWQxW-PSzM1BqJYw/BJxnJPpKze) | 前端 React 教學、專案架構與常見維護任務 |
 
 ## 專案架構
 
