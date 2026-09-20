@@ -186,7 +186,7 @@ docker compose up -d
 ### 驗證完整資料流
 
 1. 進入 `/admin/`，以 `.env` 設定的帳密登入
-2. 到「全體通知」頁面，新增一筆測試資料並儲存
+2. 到「通知管理」頁面，新增一筆測試資料並儲存
 3. 檢查以下項目：
 
 ```bash
@@ -255,6 +255,12 @@ cd acm-cms-backend && git pull
 docker compose up -d --build
 ```
 
+> **從 Vue 版升級到 React 版時必做（前端改寫後的第一次部署）**
+>
+> 官網與 CMS 後台的前端已由 Vue 改寫為 React + TypeScript，相依套件整組更換。舊的 `node_modules` volume 裡仍是 Vue 版的套件，容器啟動時看到 volume 不是空的就不會重新安裝，導致 CMS 建置失敗，容器不斷重啟，日誌出現 `Cannot find package '@vitejs/plugin-react'`。
+>
+> 因此上面的 `git pull` 之後、`docker compose up -d --build` 之前，**必須先刪除兩個 `node_modules` volume**，做法見下一節「新增或更新前端套件」。這是這個版本部署時唯一額外的步驟，內容資料（`content/`）與備份不受影響。
+
 ### 新增或更新前端套件
 
 **這個情況需要額外步驟，只做 `git pull` 與 `--build` 不會生效。**
@@ -278,11 +284,15 @@ docker compose up -d
 
 刪除後首次啟動會重新安裝所有套件，時間與初次安裝相當。
 
-若不確定是哪一邊，兩個都刪除即可：
+若不確定是哪一邊，兩個都刪除即可（從 Vue 版升級到 React 版時，兩個都必須刪）：
 
 ```bash
+docker compose down
 docker volume rm acm-cms-backend_website_node_modules acm-cms-backend_cms_node_modules
+docker compose up -d
 ```
+
+> volume 名稱的前綴是 Docker Compose 的專案名稱，預設取自 `acm-cms-backend` 資料夾的名稱。若資料夾名稱不同（或另外指定了 `-p`），前綴會跟著改變，一律以 `docker volume ls | grep node_modules` 實際列出的名稱為準。`docker volume rm` 只能在容器已停止（`docker compose down`）後執行。
 
 ### 修改帳密或更新 Token
 
@@ -330,9 +340,20 @@ Token 權限不足或設定錯誤。回到第三步檢查：Resource owner 是�
 docker exec -it acm-website git -C /app/acm-backup push origin main
 ```
 
-**建置失敗，出現 `Cannot find module '@astrojs/...'` 或類似的找不到套件錯誤**
+**建置失敗，出現 `Cannot find module '@astrojs/...'`、`Cannot find package '@vitejs/plugin-react'`、`Cannot find module 'react'` 或類似的找不到套件錯誤**
 
-主機端安裝了新套件但容器內沒有。依第九節「新增或更新前端套件」處理。
+容器內的 `node_modules` volume 還是舊的：主機端更新了套件（例如從 Vue 版升級到 React 版），但容器內沒有跟著重裝。依第九節「新增或更新前端套件」刪除兩個 `node_modules` volume 後重新啟動。
+
+**容器一直重啟，`docker compose ps` 顯示 `Restarting`**
+
+啟動時的安裝或建置失敗了。因為設定了 `restart: unless-stopped`，容器會不斷重試，日誌也會被重複的錯誤洗掉。先停止再查看：
+
+```bash
+docker compose stop
+docker compose logs --tail 100
+```
+
+日誌中最先出現的錯誤才是原因，找到並排除後執行 `docker compose up -d`。
 
 **CMS 後台頁面顯示空白或載入失敗**
 
