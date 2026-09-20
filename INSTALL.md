@@ -66,7 +66,7 @@ CMS 每次異動資料後會自動把內容備份推送到 `acm-backup`，這需
 | 欄位 | 設定值 |
 |---|---|
 | Token name | 自訂，例如 `acm-cms-backup` |
-| Expiration | 都可以，到期前需重新申請並更新 `.env` |
+| Expiration | 建議一年，到期前需重新申請並更新 `.env` |
 | Resource owner | **NCNU-ACM**（不是個人帳號，選錯會導致推送失敗） |
 | Repository access | **Only select repositories** → 勾選 `acm-backup` |
 
@@ -75,6 +75,9 @@ CMS 每次異動資料後會自動把內容備份推送到 `acm-backup`，這需
    - 只需要這一項權限，其他不要加
    - 這一步很容易漏掉，漏掉會導致推送時出現 403 錯誤
 6. 按 **Generate token**，複製產生的字串
+
+> Token 只會顯示一次，離開頁面後無法再查看。請立即複製並保存。
+> Token 等同密碼，不可以寫進程式碼或 commit 進 git。
 
 ---
 
@@ -107,6 +110,8 @@ GIT_USER_EMAIL=cms-bot@ncnu-acm.local
 `CMS_PASSWORD` 請務必修改，不要沿用範本值。
 
 若暫時沒有 token，可將 `GITHUB_TOKEN` 留空。系統仍可正常運作，只是不會推送備份到 GitHub。
+
+確認 `.env` 已被 git 忽略（`acm-cms-backend/.gitignore` 應包含 `.env`），避免 token 外流。
 
 ---
 
